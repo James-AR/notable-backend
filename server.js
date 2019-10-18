@@ -12,15 +12,15 @@ const database = {
             appointments: [
                 {
                     id: "1",
-                    firstName: "Ray",
-                    lastName: "Charles",
+                    firstName: "Bob",
+                    lastName: "Belcher",
                     date: new Date(2019, 9, 18, 12, 30),
                     kind: "New Patient"
                 },
                 {
                     id: "2",
-                    firstName: "Ashley",
-                    lastName: "Flowers",
+                    firstName: "Scott",
+                    lastName: "Mescudi",
                     date: new Date(2019, 9, 22, 8, 45),
                     kind: "New Patient"
                 } 
@@ -33,8 +33,8 @@ const database = {
             appointments: [
                 {
                     id: "1",
-                    firstName: "Scott",
-                    lastName: "Mescudi",
+                    firstName: "Ray",
+                    lastName: "Charles",
                     date: new Date(2019, 10, 10, 9, 15),
                     kind: "Follow-up"
                 },
@@ -46,39 +46,21 @@ const database = {
                     kind: "New Patient"
                 } 
             ]
-        },
-        {
-            id: "3",
-            firstName: "Nicki",
-            lastName: "Riviera",
-            appointments: [
-                {
-                    id: "1",
-                    firstName: "Charlotte",
-                    lastName: "Winsley",
-                    date: new Date(2019, 10, 15),
-                    kind: "Follow-up"
-                },
-                {
-                    id: "2",
-                    firstName: "Brad",
-                    lastName: "Cage",
-                    date: new Date(2019, 10, 17),
-                    kind: "New Patient"
-                } 
-            ]
         }
     ]
 }
 
+//GET - Root endpoint
 server.get("/", (req, res) => {
     res.status(200).json("Server is running!")
 })
 
+//GET - Get a list of doctors
 server.get("/doctors", (req, res) => {
     res.status(200).json(database.doctors)
 })
 
+//GET - Get a specific doctor's appointments
 server.get("/doctors/:id/appointments", (req, res) => {
     const { id } = req.params
     let filteredDoctor = database.doctors.find(doctor => doctor.id === id)
@@ -89,6 +71,7 @@ server.get("/doctors/:id/appointments", (req, res) => {
     }
 })
 
+//DELETE - Delete an existing appointment
 server.delete("/doctors/:doctorID/appointments/:appointmentID", (req, res) => {
     const { doctorID, appointmentID } = req.params
     let filteredDoctor = database.doctors.find(doctor => doctor.id === doctorID)
@@ -101,11 +84,13 @@ server.delete("/doctors/:doctorID/appointments/:appointmentID", (req, res) => {
     }
 })
 
+//POST - Add an appointment to a doctor's calendar
 server.post("/doctors/:id/appointments", (req, res) => {
     const { id } = req.params
     const appointment = req.body;
     let filteredDoctor = database.doctors.find(doctor => doctor.id === id)
-    console.log(appointment.date)
+    //check the minutes property of the incoming Date object here and see if it is === 0, 15, 30, or 45 
+    //OR if minutes % 15 === 0, if it is, allow the POST to succeed
     if(appointment.id && appointment.firstName && appointment.lastName && appointment.date && appointment.kind) {
         filteredDoctor.appointments.push(appointment)
         res.status(200).json("Successfully added new appointment")
